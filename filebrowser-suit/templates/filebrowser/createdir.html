@@ -1,0 +1,57 @@
+{% extends "admin/base_site.html" %}
+<!-- LOADING -->
+{% load admin_static i18n fb_tags fb_csrf %}
+
+<!-- COLTYPE/BODYCLASS -->
+{% block bodyclass %}change-form filebrowser{% if query.pop %} popup{% endif %}{% endblock %}
+{% block coltype %}colM{% endblock %}
+
+<!-- BREADCRUMBS -->
+{% block breadcrumbs %}{% include "filebrowser/include/breadcrumbs.html" %}{% endblock %}
+
+<!-- CONTENT -->
+{% block content %}
+{% if is_popup %}{% include "filebrowser/include/breadcrumbs.html" %}{% endif %}
+<div id="content-main" class="inner-two-columns">
+    <form action="{% query_string '' 'p' %}" method="post" class="form-horizontal">
+      <div class="inner-right-column" style="top:10px;">
+        <div class="box save-box">
+          <div class="submit-row clearfix">
+            <button type="submit" class="btn btn-high btn-info">{% trans 'Submit' %}</button>
+          </div>
+        </div>
+      </div>
+      <div class="inner-center-column">
+      {% fb_csrf_token %}
+        <div class="tab-content tab-content-main">
+            {% if form.errors %}<p class="errornote">{% trans 'Please correct the following errors.' %}</p>{% endif %}
+            <fieldset class="module aligned first">
+                <div class="control-group form-row field-{{ form.name.name }}{% if form.name.errors %} errors{% endif %}">
+                    {% if form.name.errors %}{{ form.name.errors }}{% endif %}
+                    <div>
+                      <div class="control-label">
+                        <label class="required" for="id_dir_name">{{ form.name.label }}</label>
+                      </div>
+                      <div class="controls">
+                        {{ form.name }}
+                        <p class="help">
+                            {{ form.name.help_text|safe }}
+                            {% if settings_var.NORMALIZE_FILENAME or settings_var.CONVERT_FILENAME %}
+                                <br />
+                                {% if settings_var.NORMALIZE_FILENAME %}
+                                    {% trans "The Name will be normalized by converting or stripping all non-standard characters." %} <br />
+                                {% endif %}
+                                {% if settings_var.CONVERT_FILENAME %}
+                                    {% trans "The Name will be converted to lowercase. Spaces will be replaced with underscores." %}
+                                {% endif %}
+                            {% endif %}
+                        </p>
+                      </div>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+      </div>
+    </form>
+</div>
+{% endblock %}

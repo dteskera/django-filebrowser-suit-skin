@@ -1,0 +1,185 @@
+{% extends "admin/base_site.html" %}
+<!-- LOADING -->
+{% load admin_static i18n fb_tags fb_versions %}
+
+<!-- JAVASCRIPTS -->
+{% block extrahead %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static "admin/js/jquery.init.js" %}"></script>
+    <script type="text/javascript">
+    (function($) {
+        $(document).ready(function() {
+            // remove edit module if no actions are given
+            if ($("select#id_custom_action").find("option").length <= 1) {
+                $("fieldset#fieldset_edit").hide();
+            }
+        });
+    })(django.jQuery);
+    </script>
+{% endblock %}
+
+<!-- COLTYPE/BODYCLASS -->
+{% block bodyclass %}change-form filebrowser{% if query.pop %} popup{% endif %}{% endblock %}
+{% block coltype %}colM{% endblock %}
+{% block content_title %}{% endblock %}
+
+<!-- BREADCRBUMBS -->
+{% block breadcrumbs %}{% include "filebrowser/include/breadcrumbs.html" %}{% endblock %}
+
+<!-- CONTENT -->
+{% block content %}
+{% if is_popup %}{% include "filebrowser/include/breadcrumbs.html" %}{% endif %}
+<div id="content-main" class="inner-two-columns">
+    <form action="{% query_string "" "filter_date,filter_type,q,p" %}" method="post" class="form-horizontal">
+      <div class="inner-right-column" style="top:10px;">
+        <div class="box save-box">
+          <div class="submit-row clearfix">
+            <button type="submit" class="btn btn-high btn-info">{% trans 'Save' %}</button>
+            <button type="submit" class="btn btn-high" name="_continue">{% trans 'Save and continue editing' %}</button>
+            <a href="{% url 'filebrowser:fb_delete_confirm' %}{% query_string %}" class="text-error deletelink">{% trans "Delete" %}</a>
+          </div>
+        </div>
+      </div>
+      <div class="inner-center-column">
+        {% csrf_token %}
+        <div class="tab-content tab-content-main">
+            {% if form.errors %}<p class="errornote">{% trans 'Please correct the following errors.' %}</p>{% endif %}
+            <fieldset class="module aligned first">
+                <div class="control-group form-row field-{{ form.name.name }}{% if form.name.errors %} errors{% endif %}">
+                    {% if form.name.errors %}{{ form.name.errors }}{% endif %}
+                    <div>
+                      <div class="control-label">
+                        <label class="required" for="id_name">{{ form.name.label }}</label>
+                      </div>
+                      <div class="controls">
+                        {{ form.name }}
+                        {% if form.name.help_text %}<p class="help">{{ form.name.help_text|safe }}</p>{% endif %}
+                      </div>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset class="module aligned" id="fieldset_edit">
+                <h2>{% trans "Edit" %}</h2>
+                <div class="control-group form-row {% if form.custom_action.errors %}errors{% endif %}">
+                    {% if form.custom_action.errors %}{{ form.custom_action.errors }}{% endif %}
+                    <div>
+                      <div class="control-label">
+                        <label class="required" for="id_custom_action">{{ form.custom_action.label }}</label>
+                      </div>
+                      <div class="controls">
+                        {{ form.custom_action }}
+                        {% if form.custom_action.help_text %}<p class="help">{{ form.custom_action.help_text|safe }}</p>{% endif %}
+                      </div>
+                    </div>
+                </div>
+            </fieldset>
+            {% if fileobject.filetype == "Folder" %}
+            <fieldset class="module aligned">
+                <h2>{% trans "Folder Information" %}</h2>
+                <div class="control-group form-row">
+                    <div>
+                      <div class="control-label">
+                        <label>{% trans "Date" %}</label>
+                      </div>
+                      <div class="controls">
+                        <p>
+                            {{ fileobject.datetime|date:"N j, Y" }}
+                        </p>
+                      </div>
+                    </div>
+                </div>
+            </fieldset>
+            {% endif %}
+            {% if fileobject.filetype != "Folder" %}
+            <fieldset class="module aligned">
+                <h2>{% trans "File Information" %}</h2>
+                <div class="control-group form-row">
+                    <div>
+                      <div class="control-label">
+                        <label>{% trans "URL" %}</label>
+                      </div>
+                      <div class="controls">
+                        <p>
+                            <a href="{{ fileobject.url }}">{{ fileobject.url }}</a>
+                        </p>
+                      </div>
+                    </div>
+                </div>
+                <div class="control-group form-row">
+                    <div>
+                      <div class="control-label">
+                        <label>{% trans "Filesize" %}</label>
+                      </div>
+                      <div class="controls">
+                        <p>
+                            {{ fileobject.filesize|filesizeformat }}
+                        </p>
+                      </div>
+                    </div>
+                </div>
+                <div class="control-group form-row">
+                    <div>
+                      <div class="control-label">
+                        <label>{% trans "Date" %}</label>
+                      </div>
+                      <div class="controls">
+                        <p>
+                            {{ fileobject.datetime|date:"N j, Y" }}
+                        </p>
+                      </div>
+                    </div>
+                </div>
+                {% if fileobject.filetype == "Image" %}
+                    <div class="control-group form-row">
+                        <div>
+                          <div class="control-label">
+                            <label>{% trans "Size" %}</label>
+                          </div>
+                          <div class="controls">
+                            <p>
+                                {{ fileobject.width }} x {{ fileobject.height }} px
+                            </p>
+                          </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </fieldset>
+            {% endif %}
+            {% if fileobject.filetype == "Image" %}
+            <fieldset class="module aligned wide">
+                <h2>{% trans "Image Versions" %}</h2>
+                {% if settings_var.ADMIN_THUMBNAIL %}
+                <div class="control-group form-row">
+                    <div>
+                      <div class="control-label">
+                        <label>{% trans "Thumbnail" %}</label>
+                      </div>
+                      <div class="controls">
+                        <img src="{% version fileobject.path settings_var.ADMIN_THUMBNAIL %}" title="{% trans 'View Image' %}" />
+                      </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if settings_var.ADMIN_VERSIONS %}
+                    {% for version in settings_var.ADMIN_VERSIONS %}
+                        {% version fileobject version as image_version %}
+                        {% version_setting version %}
+                        <div class="control-group form-row">
+                            <div>
+                              <div class="control-label">
+                                <label>{{ version_setting.verbose_name }}</label>
+                              </div>
+                              <div class="controls">
+                                <img src="{{ image_version.url }}" />
+                              </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </fieldset>
+            {% endif %}
+        </div>
+      </div>
+    </form>
+</div>
+{% endblock %}

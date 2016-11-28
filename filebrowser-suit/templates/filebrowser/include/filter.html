@@ -1,0 +1,22 @@
+{% load i18n fb_tags %}
+<span class="search-filters">
+  &nbsp;
+  <select data-name="filter_date" class="auto-width search-filter" style="max-width:200px">
+    <option value="">{% trans "Date" %}</option>
+    <option value="">---</option>
+    <option data-name="filter_date"{% if query.filter_date == "today" %} selected{% endif %} value="today">{% if query.filter_date == "today" %}{% trans "Date" %}: {% endif %}{% trans "Today" %}</option>
+    <option data-name="filter_date"{% if query.filter_date == "past7days" %} selected{% endif %} value="past7days">{% if query.filter_date == "past7days" %}{% trans "Date" %}: {% endif %}{% trans "Past 7 days" %}</option>
+    <option data-name="filter_date"{% if query.filter_date == "thismonth" %} selected{% endif %} value="thismonth">{% if query.filter_date == "thismonth" %}{% trans "Date" %}: {% endif %}{% trans "This Month" %}</option>
+    <option data-name="filter_date"{% if query.filter_date == "thisyear" %} selected{% endif %} value="thisyear">{% if query.filter_date == "thisyear" %}{% trans "Date" %}: {% endif %}{% trans "This Year" %}</option>
+  </select>
+  &nbsp;
+  <select data-name="filter_type" class="auto-width search-filter" style="max-width:200px">
+    <option value="">{% trans "Type" %}</option>
+    <option value="">---</option>
+    <option data-name="filter_type"{% if query.filter_type == 'Folder' %} selected{% endif %} value="Folder">{% if query.filter_type == 'Folder' %}{% trans "Type" %}: {% endif %}{% trans 'Folder' %}</option>
+    {% for extension in settings_var.EXTENSIONS %}
+    <option data-name="filter_type"{% if query.filter_type == extension %} selected{% endif %} value="{{ extension }}">{% if query.filter_type == extension %}{% trans "Type" %}: {% endif %}{% trans extension %}</option>
+    {% endfor %}
+  </select>
+  &nbsp;
+</span>

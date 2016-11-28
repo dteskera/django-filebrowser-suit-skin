@@ -1,0 +1,17 @@
+{% load i18n fb_versions %}
+{% if value.filetype == "Image" and value.exists %}
+{% version value.path final_attrs.ADMIN_THUMBNAIL as thumbnail_version %}
+{% endif %}
+<span class="preview" id="preview_{{ final_attrs.id }}"{% if value.filetype != "Image" or not value.exists or not thumbnail_version %} style="display: none;"{% endif %}>
+  <a {% if value.filetype != "Image" or not value.exists or not thumbnail_version %}href="javascript://" target="_self"{% else %}href="{{ value.url }}" target="_blank"{% endif %} id="previewlink_{{ final_attrs.id }}">
+    <img id="previewimage_{{ final_attrs.id }}" class="preview img-rounded" src="{% if thumbnail_version %}{{ thumbnail_version.url }}{% endif %}" />
+  </a>
+  &nbsp;
+</span>
+<input id="{{ final_attrs.id }}" type="text" class="vFileBrowseField{% if final_attrs.class %} {{ final_attrs.class }}{% endif %}" name="{{ final_attrs.name }}" value="{{ value.path }}" {% for k, v in final_attrs.data_attrs.items %}{{k}}="{{v}}" {% endfor %}/>&nbsp;
+<a href="#" onclick="FileBrowser.show($('input[type!=hidden]', $(this).parent())[0].id, '{{ url }}?pop=1{% if final_attrs.directory %}&amp;dir={{ final_attrs.directory|urlencode|urlencode }}{% endif %}{% if final_attrs.format %}&amp;filter_type={{ final_attrs.format }}{% endif %}');" class="btn btn-primary">
+    <i class="icon-search icon-white"></i>&nbsp;{% trans "Change" %}
+</a>
+{% if value and not value.exists %}
+<ul class="errorlist"><li>{% trans "File not found" %}</li></ul>
+{% endif %}
