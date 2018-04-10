@@ -24,12 +24,18 @@
 {% block bodyclass %}change-list filebrowser{% if query.pop %} popup{% endif %}{% endblock %}
 {% block coltype %}flex{% endblock %}
 
+
+{% block header %}{% if not query.pop %}{{ block.super }}{% endif %}{% endblock %}
+{% block footer %}{% if not query.pop %}{{ block.super }}{% endif %}{% endblock %}
+{% block content_title %}{% endblock %}
+
+
 <!-- BREADCRUMBS -->
-{% block breadcrumbs %}{% include "filebrowser/include/breadcrumbs.html" %}{% endblock %}
+{% block breadcrumbs %}{% if not query.pop %}{% include "filebrowser/include/breadcrumbs.html" %}{% endif %}{% endblock %}
 
 <!-- CONTENT -->
 {% block content %}
-{% if is_popup %}{% include "filebrowser/include/breadcrumbs.html" %}{% endif %}
+    {% if query.pop %}{% include "filebrowser/include/breadcrumbs.html" %}{% endif %}
     <div id="content-main">
       <div class="inner-center-column">
         <div class="module" id="changelist">

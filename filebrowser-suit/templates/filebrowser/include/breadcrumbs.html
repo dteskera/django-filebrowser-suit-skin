@@ -1,26 +1,25 @@
 {% load i18n fb_tags %}
-
 <ul class="breadcrumb">
-    {% if not query.pop %}
-        <li><a href="{% url 'admin:index' %}">{% trans "Home" %}</a></li>
-    {% endif %}
-    {% if breadcrumbs or breadcrumbs_title %}
-        <li><span class="divider">&raquo;</span><a href="{% url 'filebrowser:fb_browse' %}{% query_string "" "q,dir,filename,p" %}">{% trans 'FileBrowser' %}</a></li>
-    {% else %}
-        <li><span class="divider">&raquo;</span>{% trans 'FileBrowser' %}</li>
-    {% endif %}
-    {% for item in breadcrumbs %}
-        {% if not forloop.last %}
-            <li><span class="divider">&raquo;</span><a href="{% url 'filebrowser:fb_browse' %}{% query_string "" "q,dir,filename,p" %}&amp;dir={{ item.1|urlencode }}">{{ item.0 }}</a></li>
-        {% else %}
-            {% if breadcrumbs_title %}
-                <li><span class="divider">&raquo;</span><a href="{% url 'filebrowser:fb_browse' %}{% query_string "" "q,dir,filename,p" %}&amp;dir={{ item.1|urlencode }}">{{ item.0 }}</a></li>
-            {% else %}
-                <li><span class="divider">&raquo;</span>{{ item.0 }}</li>
-            {% endif %}
-        {% endif %}
-    {% endfor %}
+{% if not query.pop %}
+  <li><a href="{% url 'admin:index' %}">{% trans "Home" %}</a></li>
+{% endif %}
+{% if breadcrumbs or breadcrumbs_title %}
+  <li>{% if not query.pop %}<span class="divider">&raquo;</span>{% endif %}<a href="{% url 'filebrowser:fb_browse' %}{% query_string "" "q,dir,filename,p" %}">{% trans 'FileBrowser' %}</a></li>
+{% else %}
+  <li>{% if not query.pop %}<span class="divider">&raquo;</span>{% endif %}{% trans 'FileBrowser' %}</li>
+{% endif %}
+{% for item in breadcrumbs %}
+  {% if not forloop.last %}
+  <li><span class="divider">&raquo;</span><a href="{% url 'filebrowser:fb_browse' %}{% query_string "" "q,dir,filename,p" %}&amp;dir={{ item.1|urlencode }}">{{ item.0 }}</a></li>
+  {% else %}
     {% if breadcrumbs_title %}
-        <li><span class="divider">&raquo;</span>{{ breadcrumbs_title }}</li>
+  <li><span class="divider">&raquo;</span><a href="{% url 'filebrowser:fb_browse' %}{% query_string "" "q,dir,filename,p" %}&amp;dir={{ item.1|urlencode }}">{{ item.0 }}</a></li>
+    {% else %}
+  <li><span class="divider">&raquo;</span>{{ item.0 }}</li>
     {% endif %}
+  {% endif %}
+{% endfor %}
+{% if breadcrumbs_title %}
+  <li><span class="divider">&raquo;</span>{{ breadcrumbs_title }}</li>
+{% endif %}
 </ul>
